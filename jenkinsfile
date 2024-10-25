@@ -1,0 +1,58 @@
+pipeline {
+    agent any
+
+    environment {
+        DOCKERHUB_CREDENTIALS = credentials('dockerhub-credentials') 
+        DOCKER_IMAGE = 'ahmedgomaasofy/nodejs-app'
+    }
+
+    stages {
+        
+        stage('Checkout or Fetch Code') {
+            steps {
+                git 'https://github.com/AhmedGomaa98/nodejs.org.git' 
+            }
+        }
+
+        // Dependances
+        stage('Install Dependencies') {
+            steps {
+                sh 'npm ci' // npm
+            }
+        }
+
+        stage('Run Unit Testing') {
+            steps {
+                sh 'npm test' 
+            }
+        }
+
+        stage('Dockerize') {
+            steps {
+                script {
+                    dockerImage = docker.build("${DOCKER_IMAGE}")
+                }
+            }
+        }
+
+        stage('Push Docker Image') {
+            steps {
+                script {
+                    docker.withRegistry('https://registry.hub.docker.com', 'dockerhub-credentials') {
+                        dockerImage.push('latest') 
+                    }
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Pipeline completed successfully!'
+        }
+
+        failure {
+            echo 'Pipeline failed!'
+        }
+    }
+}
