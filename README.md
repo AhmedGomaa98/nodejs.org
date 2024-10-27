@@ -3,7 +3,7 @@
 ## Overview
 
 This project demonstrates how to deploy a **Node.js** application from a GitHub repository to a **Kubernetes cluster** using **Minikube** and **ArgoCD**. Additionally, we will configure a **Jenkins pipeline** to automate the build, testing, and deployment process, including **pushing a Docker image to DockerHub**.
-
+![alt text](<Project Design - Ahmed Gmaa SoFy-1.png>)
 ---
 
 ## Prerequisites
