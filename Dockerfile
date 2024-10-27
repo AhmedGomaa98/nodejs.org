@@ -5,7 +5,7 @@ FROM node:18
 WORKDIR /app
 
 # Copy package files and install dependencies to optimize caching
-COPY package*.json ./
+COPY package.json package-lock.json ./
 
 # Install dependencies
 RUN npm install
@@ -17,7 +17,8 @@ COPY . .
 EXPOSE 3000
 
 # Default command to run the application
-CMD ["npm", "start"]
+#CMD ["npm", "start"]
+CMD ["node", "index.js"]
 
 
 
