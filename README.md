@@ -53,10 +53,8 @@ git push origin main
  ![alt text](D3-2.png)  
 ### Step 5: Set Up Jenkins Pipeline
 ![alt text](<Screenshot 2024-10-27 044745-1.png>)
-![alt text](<Screenshot 2024-10-27 044745-1.png>)
 
 #### pushed to dockerhub
-![alt text](<Screenshot 2024-10-27 044111-1.png>)
 ![alt text](<Screenshot 2024-10-27 044111-1.png>)
 
 ## Kubernetes Deployment
@@ -109,15 +107,12 @@ kubectl get secret -n argocd argocd-initial-admin-secret -o jsonpath="{.data.pas
 
 ### Step 5: Deploy the Node.js App to Kubernetes
 ![alt text](<Screenshot 2024-10-27 044437-1.png>)
-![alt text](<Screenshot 2024-10-27 044437-1.png>)
 
 ### Step 6: Configure ArgoCD to Manage the Deployment
 
 ![alt text](<Screenshot 2024-10-27 044419-1.png>)
-![alt text](<Screenshot 2024-10-27 044419-1.png>)
 
 # Conclusion
 With this setup, your Node.js application is deployed on a Kubernetes cluster using Minikube. The application is managed through ArgoCD for continuous delivery, and all changes to the k8 directory will trigger updates to the deployment.
-![alt text](<Screenshot 2024-10-27 050615-1.png>)
 ![alt text](<Screenshot 2024-10-27 050615-1.png>)
 
