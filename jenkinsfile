@@ -2,57 +2,76 @@ pipeline {
     agent any
 
     environment {
-        DOCKERHUB_CREDENTIALS = credentials('dockerhub-credentials') 
+        TURBO_CONFIG = '/var/jenkins_home/.config/turborepo/config.json' // Ensure this path is accessible
+        DOCKERHUB_CREDENTIALS = credentials('DoHub-Usr-Pass') 
         DOCKER_IMAGE = 'ahmedgomaasofy/nodejs-app'
     }
 
     stages {
-        
-        stage('Checkout or Fetch Code') {
-            steps {
-                git 'https://github.com/AhmedGomaa98/nodejs.org.git' 
-            }
-        }
-
-        // Dependances
-        stage('Install Dependencies') {
-            steps {
-                sh 'npm ci' // npm
-            }
-        }
-
-        stage('Run Unit Testing') {
-            steps {
-                sh 'npm test' 
-            }
-        }
-
-        stage('Dockerize') {
+        stage("Setup NodeJS") {
             steps {
                 script {
-                    dockerImage = docker.build("${DOCKER_IMAGE}")
-                }
-            }
-        }
-
-        stage('Push Docker Image') {
-            steps {
-                script {
-                    docker.withRegistry('https://registry.hub.docker.com', 'dockerhub-credentials') {
-                        dockerImage.push('latest') 
+                    nodejs(nodeJSInstallationName: 'NodeJS 18') {
+                        echo 'Node.js is set up'
                     }
                 }
             }
         }
-    }
 
-    post {
-        success {
-            echo 'Pipeline completed successfully!'
+        stage("Checkout code") {
+            steps {
+                script {
+                    def repoUrl = 'https://github.com/AhmedGomaa98/nodejs.org.git'
+                    def localDir = 'nodejs.org'
+                    
+                    if (!fileExists(localDir)) {
+                        sh "git clone ${repoUrl} ${localDir}"
+                    }
+                    
+                    dir(localDir) {
+                        sh 'git fetch --all'
+                        def branch = 'main'
+                        sh "git checkout ${branch} || git checkout -b ${branch} origin/${branch}"
+                    }
+                }
+            }
+        }
+    
+        stage('Prepare Environment') {
+            steps {
+                // Mark directory as safe to avoid Git ownership issue
+                sh 'git config --global --add safe.directory /var/jenkins_home/workspace/NodeJS-App/nodejs.org'
+            }
+        }
+        
+        stage("Install dependencies") {
+            steps {
+                nodejs(nodeJSInstallationName: 'NodeJS 18') {
+                    dir('nodejs.org') {
+                        sh 'npm ci'  // This will now have access to the Node.js executable
+                    }
+                }
+            }
         }
 
-        failure {
-            echo 'Pipeline failed!'
+        stage("Dockerize") {
+            steps {
+                dir('nodejs.org') {
+                    sh 'docker build --no-cache -t ahmedgomaasofy/nodejs.org .'
+                    sh 'docker build -t ahmedgomaasofy/nodejs.org .'  // Ensure Dockerfile is present
+                }
+            }
+        }
+
+        stage("Push Docker image") {
+            steps {
+                dir('nodejs.org') {
+                    withCredentials([usernamePassword(credentialsId: 'DoHub-Usr-Pass', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                        sh 'echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin'
+                        sh 'docker push ahmedgomaasofy/nodejs.org'
+                    }
+                }
+            }
         }
     }
 }
