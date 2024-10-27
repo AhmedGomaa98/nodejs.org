@@ -40,8 +40,6 @@ npm test
 ![alt text](1-1.png)
 ![alt text](1-1-1.png)
 ![alt text](2-1.png)
-![alt text](2-1-1.png)
-![alt text](3-1.png)
 ### Step 4: Create a Dockerfile and Push to GitHub
 Create a Dockerfile inside the project directory:
 
@@ -52,9 +50,6 @@ git push origin main
 
  ![alt text](D1-1.png) 
  ![alt text](D2-1.png) 
- ![alt text](D2-1-1.png)
- ![alt text](D2-2.png)
- ![alt text](D3-1.png) 
  ![alt text](D3-2.png)  
 ### Step 5: Set Up Jenkins Pipeline
 ![alt text](<Screenshot 2024-10-27 044745-1.png>)
